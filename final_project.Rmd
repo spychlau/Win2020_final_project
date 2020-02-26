@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(rio)
 library(here)
+library(naniar)
 
 # Loading data
 
@@ -60,6 +61,7 @@ ggplot(final_data_2, aes(x = ACE2more_1718,
 3. Plot 2: Calculated proportion of type of adverse childhood experience.
 
 ```{r, fig.width=20}
+
 final_data_3 <- final_data_2%>%
   mutate(proportion = (n/sum(n)))
 
