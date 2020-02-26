@@ -1,0 +1,101 @@
+---
+title: "final_project"
+author: "Asha Yadav"
+date: "2/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Datasets
+
+```{r data}
+
+library(tidyverse)
+library(rio)
+library(here)
+
+# Loading data
+
+NCSH <- import(here("data","2017-2018 NSCH_Topical_DRC_Dec 2019.csv"))
+state <- import(here("data","fips_state.csv"))
+
+# Left_join to add states in the NCSH dataset
+
+final_data <- left_join(NCSH, state, by = "FIPSST")
+
+```
+
+2. Plot 1: Used the raw data
+
+```{r fig.width=20}
+
+final_data_2 <- final_data%>%
+  select(State, SC_CSHCN, ACE2more_1718)
+final_data_2$SC_CSHCN[which(final_data_2$SC_CSHCN==1)]<-"Sp Health Needs"
+final_data_2$SC_CSHCN[which(final_data_2$SC_CSHCN==2)]<-"No Sp Health needs"
+
+final_data_2$ACE2more_1718[which(final_data_2$ACE2more_1718==1)]<-"Exp No ACE"
+final_data_2$ACE2more_1718[which(final_data_2$ACE2more_1718==2)]<-"Exp 1 ACE"
+final_data_2$ACE2more_1718[which(final_data_2$ACE2more_1718==3)]<-"Exp 2 ACE"
+
+final_data_2 <- final_data_2%>%
+  replace_with_na(replace = list(ACE2more_1718 = 99))%>%
+  drop_na()%>%
+  group_by(State, SC_CSHCN)%>%
+  count(ACE2more_1718)
+
+ggplot(final_data_2, aes(x = ACE2more_1718, 
+                         y = n, 
+                         fill = SC_CSHCN)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  facet_wrap(~State)
+
+```
+
+
+3. Plot 2: Calculated proportion of type of adverse childhood experience.
+
+```{r, fig.width=20}
+final_data_3 <- final_data_2%>%
+  mutate(proportion = (n/sum(n)))
+
+ggplot(final_data_3, aes(x = ACE2more_1718, 
+                         y = proportion, 
+                         fill = SC_CSHCN)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  facet_wrap(~State)
+
+```
+
+4. Plot 3: Clearer version
+
+```{r fig.width=20, fig.height=30}
+
+final_data_3 <- final_data_2%>%
+  mutate(percentage = (n/sum(n))*100)
+
+ggplot(final_data_3, aes(x = ACE2more_1718, 
+                         y = percentage, 
+                         fill = SC_CSHCN)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  facet_wrap(~State) +
+  theme(strip.text.x = element_text(size=20),
+        strip.background = element_rect(color = "black"),
+        legend.position = c(.85, .1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        text = element_text(size = 30),
+        legend.title = element_blank()) +
+  labs(title = "Children with special health needs likely to experience higher adverse childhood\nexperiences in United States\n",
+       caption = "Data Source: NSCH 2017-18 data")
+  
+```
+
+
+
