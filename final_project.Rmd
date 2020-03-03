@@ -3,6 +3,8 @@ title: "final_project"
 author: "Asha Yadav"
 date: "2/22/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -22,6 +24,11 @@ library(naniar)
 
 NCSH <- import(here("data","2017-2018 NSCH_Topical_DRC_Dec 2019.csv"))
 state <- import(here("data","fips_state.csv"))
+
+#The above code did not work, I got an error telling me there was no such file in the directory
+
+NCSH <- read_csv("2017-2018 NSCH_Topical_DRC_Dec 2019.csv")
+state <- read_csv("fips_state.csv")
 
 # Left_join to add states in the NCSH dataset
 
@@ -55,6 +62,8 @@ ggplot(final_data_2, aes(x = ACE2more_1718,
   coord_flip() +
   facet_wrap(~State)
 
+#Wow, so much data! Could you just plot a subset of states?
+
 ```
 
 
@@ -71,6 +80,11 @@ ggplot(final_data_3, aes(x = ACE2more_1718,
   geom_col(position = "dodge") +
   coord_flip() +
   facet_wrap(~State)
+
+#Again, this is so much data, I don't know what to focus on.
+#Aesthetically, could you use different colors?
+#clean up labels
+#Instead of the default, xould you have the titles for the facets be on white background, without the black outline?
 
 ```
 
@@ -96,8 +110,14 @@ ggplot(final_data_3, aes(x = ACE2more_1718,
         legend.title = element_blank()) +
   labs(title = "Children with special health needs likely to experience higher adverse childhood\nexperiences in United States\n",
        caption = "Data Source: NSCH 2017-18 data")
-  
+
+#Same issues, this graph is not legible without zoom.
+#Since you are looking at a difference in this plot, instead of showing adverse childhood experience for both groups in parallel bars, could you just calculate the difference between the groups and plot that?
+
 ```
 
+I think you have some really interesting and important data that needs to be communicated. Looig forward, I wonder how you can make the data more accessible.
+Focussing on certain regions over others might be an easy way to do it. Alternatively, you could focus on those states where children have the most adverse experiences.
 
+Also, since you have regional data, I think it would be a great occasion to use a geographic map. That would be a fun alternative to the barcharts.
 
